@@ -37,6 +37,7 @@ function Donut({ percent = 0, label = 'Donors Reached' }) {
 export default function Dashboard() {
   const [voters, setVoters] = useState([])
   const [loading, setLoading] = useState(true)
+  const [fabOpen, setFabOpen] = useState(false)
 
   useEffect(() => {
     (async () => {
@@ -56,7 +57,7 @@ export default function Dashboard() {
     const male = voters.filter(v => (v['Gender'] || '').includes('पुरुष')).length
     const female = voters.filter(v => (v['Gender'] || '').includes('महिला')).length
     const unknown = total - male - female
-    const donorsReached = Math.min(100, Math.round(total ? (female / total) * 100 : 0)) // demo
+    const donorsReached = Math.min(100, Math.round(total ? (female / total) * 100 : 0))
     return { total, male, female, unknown, donorsReached }
   }, [voters])
 
@@ -74,7 +75,7 @@ export default function Dashboard() {
   const handleMock = (type) => alert(`${type} mock test coming soon!`)
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-24">
       <header className="px-3 sm:px-4 py-3 bg-white shadow sticky top-0 z-10">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <h1 className="text-base sm:text-lg font-semibold">Candidate Dashboard</h1>
@@ -110,11 +111,7 @@ export default function Dashboard() {
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="party" />
-                  <YAxis
-                    domain={[0, 400]}
-                    ticks={[0, 100, 200, 300, 400]}
-                    tickFormatter={(v) => v}
-                  />
+                  <YAxis domain={[0, 400]} ticks={[0, 100, 200, 300, 400]} />
                   <Tooltip formatter={(v) => [`${v}`, 'Voters (in hundreds)']} />
                   <Legend />
                   <Bar dataKey="value" fill="#2563eb" radius={[6, 6, 0, 0]}>
@@ -126,45 +123,39 @@ export default function Dashboard() {
           )}
         </section>
 
-        {/* Mock Test cards */}
-        <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        {/* Mock Test cards: side-by-side squares on mobile */}
+        <section className="grid grid-cols-3 sm:grid-cols-3 gap-2 sm:gap-4">
           <button
             onClick={() => handleMock('Booth Management')}
-            className="bg-gradient-to-br from-brand-100 to-white border border-brand-200 rounded-xl sm:rounded-2xl shadow hover:shadow-md transition p-4 text-left"
+            className="aspect-square bg-gradient-to-br from-brand-100 to-white border border-brand-200 rounded-xl sm:rounded-2xl shadow hover:shadow-md transition p-3 sm:p-4 text-left flex flex-col"
           >
-            <div className="text-2xl">🗳️</div>
-            <div className="mt-2 font-semibold text-slate-800 text-sm sm:text-base">
-              Booth Management Mock Test
+            <div className="text-xl sm:text-2xl">🗳️</div>
+            <div className="mt-1 sm:mt-2 font-semibold text-slate-800 text-xs sm:text-base leading-tight">
+              Booth Mgmt
             </div>
-            <p className="text-[11px] sm:text-xs text-slate-500">
-              Queue, roll list & turnout scenarios
-            </p>
+            <p className="text-[10px] sm:text-xs text-slate-500 mt-auto">Queue & turnout</p>
           </button>
 
           <button
             onClick={() => handleMock('Volunteer Training')}
-            className="bg-gradient-to-br from-emerald-100 to-white border border-emerald-200 rounded-xl sm:rounded-2xl shadow hover:shadow-md transition p-4 text-left"
+            className="aspect-square bg-gradient-to-br from-emerald-100 to-white border border-emerald-200 rounded-xl sm:rounded-2xl shadow hover:shadow-md transition p-3 sm:p-4 text-left flex flex-col"
           >
-            <div className="text-2xl">🤝</div>
-            <div className="mt-2 font-semibold text-slate-800 text-sm sm:text-base">
-              Volunteer Training Quiz
+            <div className="text-xl sm:text-2xl">🤝</div>
+            <div className="mt-1 sm:mt-2 font-semibold text-slate-800 text-xs sm:text-base leading-tight">
+              Volunteer Quiz
             </div>
-            <p className="text-[11px] sm:text-xs text-slate-500">
-              Voter outreach & etiquette
-            </p>
+            <p className="text-[10px] sm:text-xs text-slate-500 mt-auto">Outreach basics</p>
           </button>
 
           <button
             onClick={() => handleMock('Constituency GK')}
-            className="bg-gradient-to-br from-amber-100 to-white border border-amber-200 rounded-xl sm:rounded-2xl shadow hover:shadow-md transition p-4 text-left"
+            className="aspect-square bg-gradient-to-br from-amber-100 to-white border border-amber-200 rounded-xl sm:rounded-2xl shadow hover:shadow-md transition p-3 sm:p-4 text-left flex flex-col"
           >
-            <div className="text-2xl">📍</div>
-            <div className="mt-2 font-semibold text-slate-800 text-sm sm:text-base">
-              Constituency GK Test
+            <div className="text-xl sm:text-2xl">📍</div>
+            <div className="mt-1 sm:mt-2 font-semibold text-slate-800 text-xs sm:text-base leading-tight">
+              Constituency GK
             </div>
-            <p className="text-[11px] sm:text-xs text-slate-500">
-              Wards, booths, demographics
-            </p>
+            <p className="text-[10px] sm:text-xs text-slate-500 mt-auto">Wards & booths</p>
           </button>
         </section>
 
@@ -191,16 +182,58 @@ export default function Dashboard() {
         </section>
       </main>
 
+      {/* Bottom nav with centered Floating Action Button (+) */}
       <nav
         className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur border-t"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 6px)' }}
       >
-        <div className="max-w-6xl mx-auto grid grid-cols-5 text-center text-[11px] sm:text-xs py-3 text-slate-600">
-          <button className="flex flex-col items-center gap-1">Dashboard</button>
-          <button className="flex flex-col items-center gap-1">Benefits</button>
-          <button className="flex flex-col items-center gap-1">Messages</button>
-          <button className="flex flex-col items-center gap-1">Tasks</button>
-          <button className="flex flex-col items-center gap-1">Calendars</button>
+        <div className="relative max-w-6xl mx-auto">
+          {/* FAB actions (toggle) */}
+          <div className={`absolute -top-16 left-1/2 -translate-x-1/2 z-20 transition-opacity ${fabOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleMock('Quick Mock')}
+                className="rounded-full bg-white shadow border px-3 py-2 text-xs"
+              >
+                Quick Mock
+              </button>
+              <button
+                onClick={() => alert('Share appeal (WA)')}
+                className="rounded-full bg-white shadow border px-3 py-2 text-xs"
+              >
+                Share Appeal
+              </button>
+              <button
+                onClick={() => alert('New Task')}
+                className="rounded-full bg-white shadow border px-3 py-2 text-xs"
+              >
+                New Task
+              </button>
+            </div>
+          </div>
+
+          {/* 5-tab bar */}
+          <div className="grid grid-cols-5 text-center text-[11px] sm:text-xs py-3 text-slate-600">
+            <button className="flex flex-col items-center gap-1">Dashboard</button>
+            <button className="flex flex-col items-center gap-1">Benefits</button>
+
+            {/* center slot reserved for FAB visual space */}
+            <div className="flex flex-col items-center justify-end">
+              {/* Spacer so tabs are symmetrical */}
+            </div>
+
+            <button className="flex flex-col items-center gap-1">Tasks</button>
+            <button className="flex flex-col items-center gap-1">Calendars</button>
+          </div>
+
+          {/* Floating + button (center) */}
+          <button
+            onClick={() => setFabOpen(v => !v)}
+            aria-label="Add"
+            className={`absolute -top-6 left-1/2 -translate-x-1/2 z-30 w-14 h-14 rounded-full grid place-items-center shadow-lg border bg-brand-600 text-white transition-transform ${fabOpen ? 'rotate-45' : ''}`}
+          >
+            +
+          </button>
         </div>
       </nav>
     </div>
